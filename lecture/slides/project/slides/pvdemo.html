@@ -1,0 +1,16 @@
+<section id="pvdemo" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Демо: Нідгем–Шредер у ProVerif</h2>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#3D4752">1. A → B: aenc((na, A), pkB) · 2. B → A: aenc((na, nb), pkA) · 3. A → B: aenc(nb, pkB)</p>
+<div style="display:flex;gap:32px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#15202B;padding:36px;border-radius:16px">
+<p style="font-size:26px;font-weight:600;color:#8EC1EE">nspk.pv, процес Боба</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#F5F3EE">let Bob =<br>&#160;&#160;in(c, m1: bitstring);<br>&#160;&#160;let (na: bitstring, =A) = adec(m1, skB) in<br>&#160;&#160;get keys(=A, pkPeer) in<br>&#160;&#160;new nb: bitstring;<br>&#160;&#160;out(c, aenc((na, nb), pkPeer));<br>&#160;&#160;in(c, m3: bitstring);<br>&#160;&#160;if adec(m3, skB) = nb then<br>&#160;&#160;event BobCommit(A, B, na, nb);<br>&#160;&#160;out(c, senc(secretNb, nb)).</p>
+</div>
+<div style="width:760px;display:flex;flex-direction:column;gap:10px;background:#0E1620;padding:36px;border-radius:16px">
+<p style="font-size:26px;font-weight:600;color:#F0995E">термінал</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#F5F3EE">$ proverif nspk.pv | grep RESULT<br>RESULT event(BobCommit(A[],B[],<br>&#160;&#160;na_2,nb_2)) ==&gt; event(<br>&#160;&#160;AliceRunning(A[],B[],na_2,nb_2))<br>&#160;&#160;is <span style="color:#F0995E">false</span>.<br>RESULT not attacker(secretNb[])<br>&#160;&#160;is <span style="color:#F0995E">false</span>.</p>
+<p style="font-size:26px;line-height:1.4;color:#B8C2CC">≈ 0,02 с, необмежена кількість сесій</p>
+</div>
+</div>
+<aside>Подивімося на живий приклад. Це протокол Нідгема–Шредера: Аліса надсилає Бобові свій нонс і ім’я, зашифровані відкритим ключем Боба; Боб відповідає обома нонсами, зашифрованими ключем Аліси; Аліса повертає нонс Боба. Ліворуч процес Боба в ProVerif. Він приймає повідомлення, розшифровує його своїм ключем і перевіряє, що всередині ім’я Аліси, бо в цій моделі Боб говорить лише з Алісою. Далі бере ключ Аліси з таблиці, генерує nb, відповідає, приймає третє повідомлення, перевіряє nb і ставить подію BobCommit: «я завершив сесію з Алісою». Наостанок він шифрує окремий секрет на ключі nb, щоб ми могли перевірити секретність nb. Процес Аліси симетричний, і Аліса погоджується говорити з будь-ким, кого обере зловмисник. Запускаємо. Тут варто показати наживо, файл є в теці розминки першої практичної. За соті частки секунди обидві властивості спростовано: і автентифікація Аліси перед Бобом, і секретність nb. Зверніть увагу, що це для необмеженої кількості паралельних сесій.</aside>
+</section>

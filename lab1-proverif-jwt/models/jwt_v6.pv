@@ -1,0 +1,120 @@
+(* Lab 1, variant 6: JWT bearer tokens.
+
+   Participants
+     alice  an honest user with role admin (password pwAlice)
+     IdP    the identity provider: checks the password, signs a JWT
+     rs     the honest resource server that accepts JWTs
+     evil   a service run by the attacker; alice may log into it too
+
+   Messages (TLS is modelled as public-key encryption to the server; the
+   reply is protected with a fresh key k chosen by the client)
+     1. user -> IdP : penc((LOGIN, user, password, aud, k), pkIdP)
+     2. IdP -> user : senc(jwt, k)
+                      jwt = (hdr, claims, sig)
+                      hdr = (alg, jku), claims = (sub, role, aud, jti)
+                      sig = sign((hdr, (sub, aud, jti)), skIdP)
+     3. user -> aud : penc((jwt, req), pkAud)   if aud = rs
+                      (jwt, req)                if aud is a service the attacker runs
+
+   The attacker controls the network, may register any number of its own
+   users (with role "user"), runs the service evil, and chooses which
+   service alice logs into.
+
+   Run:  proverif <file>.pv *)
+
+free c: channel.
+
+type skey.
+type pkey.
+
+fun pk(skey): pkey.
+fun pkbytes(pkey): bitstring [data].   (* serialized public key (PEM / JWK) *)
+
+(* JWS signatures (RS256) *)
+fun sign(bitstring, skey): bitstring.
+reduc forall m: bitstring, k: skey; verify(sign(m, k), m, pk(k)) = true.
+
+(* HMAC (HS256) *)
+fun hmac(bitstring, bitstring): bitstring.
+
+(* TLS abstraction *)
+fun penc(bitstring, pkey): bitstring.
+reduc forall m: bitstring, k: skey; pdec(penc(m, pk(k)), k) = m.
+fun senc(bitstring, bitstring): bitstring.
+reduc forall m: bitstring, k: bitstring; sdec(senc(m, k), k) = m.
+
+const LOGIN: bitstring.
+const RS256, HS256, NONE: bitstring.
+const admin, user: bitstring.
+
+free alice, rs, evil: bitstring.
+free pwAlice: bitstring [private].
+free skIdP, skRS: skey [private].
+
+(* IdP user database: name, password, role *)
+table users(bitstring, bitstring, bitstring).
+
+event Issued(bitstring, bitstring, bitstring).      (* sub, role, aud *)
+event UserSends(bitstring, bitstring, bitstring).   (* sub, aud, req *)
+event RSAccept(bitstring, bitstring, bitstring).    (* sub, role, req, at rs *)
+
+(* Q1. Token authenticity: rs accepts a token for (sub, role) only if the
+   IdP issued exactly this sub and role for audience rs. *)
+query s: bitstring, r: bitstring, q: bitstring;
+  event(RSAccept(s, r, q)) ==> event(Issued(s, r, rs)).
+
+(* Q2. Request authenticity: rs executes a request on behalf of alice only
+   if alice sent exactly this request to rs. *)
+query r: bitstring, q: bitstring;
+  event(RSAccept(alice, r, q)) ==> event(UserSends(alice, rs, q)).
+
+(* Q3. The password stays secret. *)
+query attacker(pwAlice).
+
+(* Q4. Sanity check: an honest run is possible, so Q1 and Q2 are not true
+   just because rs never accepts anything. Expected: "is false". *)
+query q: bitstring; event(RSAccept(alice, admin, q)).
+
+let User =
+  in(c, aud: bitstring);             (* the attacker picks the service *)
+  new k: bitstring;
+  out(c, penc((LOGIN, alice, pwAlice, aud, k), pk(skIdP)));
+  in(c, x: bitstring);
+  let jwt = sdec(x, k) in
+  new req: bitstring;
+  event UserSends(alice, aud, req);
+  if aud = rs then
+    out(c, penc((jwt, req), pk(skRS)))
+  else
+    out(c, (jwt, req)).
+
+let IdP =
+  in(c, y: bitstring);
+  let (=LOGIN, u: bitstring, pw: bitstring, aud: bitstring, k: bitstring) = pdec(y, skIdP) in
+  get users(=u, =pw, role) in
+  new jti: bitstring;
+  let hdr = (RS256, pk(skIdP)) in
+  let claims = (u, role, aud, jti) in
+  event Issued(u, role, aud);
+  out(c, senc((hdr, claims, sign((hdr, (u, aud, jti)), skIdP)), k)).
+
+let RS =
+  in(c, y: bitstring);
+  let (jwt: bitstring, req: bitstring) = pdec(y, skRS) in
+  let (hdr: bitstring, claims: bitstring, sig: bitstring) = jwt in
+  let (alg: bitstring, jku: pkey) = hdr in
+  let (sub: bitstring, role: bitstring, aud: bitstring, jti: bitstring) = claims in
+  if alg = RS256 then
+  if verify(sig, (hdr, (sub, aud, jti)), pk(skIdP)) = true then
+  if aud = rs then
+  event RSAccept(sub, role, req).
+
+(* The attacker registers its own accounts. *)
+let Register =
+  in(c, (u: bitstring, pw: bitstring));
+  if u <> alice then insert users(u, pw, user).
+
+process
+  insert users(alice, pwAlice, admin);
+  out(c, pk(skIdP)); out(c, pk(skRS));
+  ( !User | !IdP | !RS | !Register )

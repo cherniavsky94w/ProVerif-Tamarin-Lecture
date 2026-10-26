@@ -1,0 +1,26 @@
+<section id="oauth" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">OAuth 2.0: потік з кодом авторизації</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<ol style="flex:1;font-size:27px;line-height:1.5;color:#15202B">
+<li>Браузер → клієнт: «Увійти через AS»</li>
+<li>Клієнт → браузер: на AS з client_id, redirect_uri, state</li>
+<li>Браузер → AS: логін і пароль</li>
+<li>AS → браузер: на redirect_uri з code, state, iss</li>
+<li>Браузер → клієнт: code, state, iss</li>
+<li>Клієнт → AS: code і client_secret</li>
+<li>AS → клієнт: токен; клієнт впускає користувача</li>
+</ol>
+<table style="width:780px;font-size:26px;color:#15202B">
+<tr><th style="width:52%">Захист</th><th style="width:48%">Від чого</th></tr>
+<tr><td>точне порівняння redirect_uri</td><td>крадіжка коду</td></tr>
+<tr><td>state, прив’язаний до сесії браузера</td><td>login CSRF</td></tr>
+<tr><td>одноразовий код</td><td>повтор коду після витоку</td></tr>
+<tr><td>код прив’язаний до client_id</td><td>підстановка чужого коду</td></tr>
+<tr><td>iss у відповіді (RFC 9207)</td><td>mix-up</td></tr>
+<tr><td>303, а не 307 після форми входу</td><td>витік пароля</td></tr>
+<tr><td>PKCE (RFC 7636)</td><td>ін’єкція коду</td></tr>
+</table>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5A6470">RFC 6749 (OAuth 2.0), RFC 9700 (OAuth 2.0 Security Best Current Practice); Fett, Küsters, Schmitz, ACM CCS 2016</p>
+<aside>Другий протокол — OAuth 2.0, точніше потік з кодом авторизації, той, що стоїть за кнопкою «Увійти через Google» чи будь-який інший сервер авторизації. Сім кроків. Користувач натискає «Увійти» на сайті-клієнті. Клієнт перенаправляє браузер на сервер авторизації з ідентифікатором клієнта, адресою повернення і випадковим state. Користувач уводить на сервері авторизації логін і пароль. Сервер перенаправляє браузер назад на адресу повернення з кодом. Браузер приносить код клієнту, клієнт обмінює код на токен, автентифікуючись своїм секретом, і впускає користувача. Праворуч захисти, кожен закриває конкретну атаку. Точне порівняння адреси повернення не дає вкрасти код. state, прив’язаний до сесії браузера, захищає від login CSRF, коли жертву непомітно впускають в акаунт зловмисника. Код має бути одноразовим і прив’язаним до клієнта. Параметр iss з RFC 9207 захищає від mix-up, коли клієнт працює з кількома серверами авторизації. Статус 303 замість 307 не дає браузеру переслати форму з паролем далі. І PKCE прив’язує код до сесії, яка почала авторизацію. Усе це зведено в RFC 9700; частину цих атак знайшли саме формальним аналізом. У другій практичній у кожній моделі бракує одного захисту.</aside>
+</section>

@@ -1,0 +1,72 @@
+(* Needham-Schroeder public-key protocol (1978), the classic warm-up.
+
+     1. A -> B : aenc((na, A), pkB)
+     2. B -> A : aenc((na, nb), pkA)
+     3. A -> B : aenc(nb, pkB)
+
+   Alice talks to anyone (the attacker picks her peer). Bob only accepts
+   sessions that claim to come from Alice. The attacker owns host I with a
+   key pair of its own, i.e. I is a registered but dishonest participant.
+
+   Run:  proverif nspk.pv
+   Expected: both queries FALSE (Lowe's man-in-the-middle attack, 1995). *)
+
+free c: channel.
+
+type host.
+type skey.
+type pkey.
+
+fun pk(skey): pkey.
+fun aenc(bitstring, pkey): bitstring.
+reduc forall m: bitstring, k: skey; adec(aenc(m, pk(k)), k) = m.
+fun senc(bitstring, bitstring): bitstring.
+reduc forall m: bitstring, k: bitstring; sdec(senc(m, k), k) = m.
+
+free A, B, I: host.
+free skA, skB: skey [private].
+free skI: skey.                 (* the attacker knows its own key *)
+
+(* Public-key directory: host -> public key. *)
+table keys(host, pkey).
+
+event AliceRunning(host, host, bitstring, bitstring).
+event BobCommit(host, host, bitstring, bitstring).
+
+(* Authentication of Alice to Bob: if Bob finishes a run with Alice using
+   na, nb, then Alice really ran the protocol with Bob on the same nonces. *)
+query na: bitstring, nb: bitstring;
+  event(BobCommit(A, B, na, nb)) ==> event(AliceRunning(A, B, na, nb)).
+
+(* Secrecy of what Bob protects with nb in a session with Alice. *)
+free secretNb: bitstring [private].
+query attacker(secretNb).
+
+let Alice =
+  in(c, peer: host);                    (* the attacker chooses Alice's peer *)
+  get keys(=peer, pkPeer) in
+  new na: bitstring;
+  out(c, aenc((na, A), pkPeer));
+  in(c, m2: bitstring);
+  let (=na, nb: bitstring) = adec(m2, skA) in
+  event AliceRunning(A, peer, na, nb);
+  out(c, aenc(nb, pkPeer)).
+
+let Bob =
+  in(c, m1: bitstring);
+  let (na: bitstring, =A) = adec(m1, skB) in
+  get keys(=A, pkPeer) in
+  new nb: bitstring;
+  out(c, aenc((na, nb), pkPeer));
+  in(c, m3: bitstring);
+  if adec(m3, skB) = nb then
+  event BobCommit(A, B, na, nb);
+  (* Bob uses nb as a key shared with Alice: if nb leaks, so does this. *)
+  out(c, senc(secretNb, nb)).
+
+process
+  insert keys(A, pk(skA));
+  insert keys(B, pk(skB));
+  insert keys(I, pk(skI));
+  out(c, pk(skA)); out(c, pk(skB));
+  ( !Alice | !Bob )

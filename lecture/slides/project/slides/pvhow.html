@@ -1,0 +1,48 @@
+<section id="pvhow" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Як ProVerif шукає атаку</h2>
+<div style="display:flex;align-items:center;gap:20px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:28px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Модель .pv</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">процеси учасників, запити</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:28px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Горн-клаузи</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">«знає A, отже знає B»</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:28px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Насичення</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">резолюція до нерухомої точки</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#15202B;padding:28px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F5F3EE">Запит</h3>
+<p style="font-size:24px;line-height:1.35;color:#B8C2CC">чи виводиться ціль?</p>
+</div>
+</div>
+<div style="display:flex;gap:32px;align-items:start">
+<div style="width:960px;display:flex;flex-direction:column;gap:12px;background:#15202B;padding:36px;border-radius:16px">
+<p style="font-size:24px;font-weight:600;color:#8EC1EE">Клаузи для NSPK (спрощено)</p>
+<p style="font-size:24px;line-height:1.4;color:#B8C2CC">Зловмисник розшифровує, якщо знає ключ:</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#F5F3EE">attacker(aenc(m, pk(k))) ∧ attacker(k)<br>&#160;&#160;→ attacker(m)</p>
+<p style="font-size:24px;line-height:1.4;color:#B8C2CC">Боб відповідає на будь-яке перше повідомлення:</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#F5F3EE">attacker(aenc((x, A), pk(skB)))<br>&#160;&#160;→ attacker(aenc((x, nb[x]), pk(skA)))</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:6px;background:#E3ECF5;padding:24px 28px;border-radius:12px">
+<h3 style="font-size:28px;font-weight:600;color:#1F5F99">Ціль не виводиться</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">true: доведено для всіх сесій</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#F6E3D6;padding:24px 28px;border-radius:12px">
+<h3 style="font-size:28px;font-weight:600;color:#B4501A">Виводиться, трасу відновлено</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">false і траса атаки</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#ECE8DF;padding:24px 28px;border-radius:12px">
+<h3 style="font-size:28px;font-weight:600;color:#3D4752">Трасу не відновлено</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">cannot be proved: можлива хибна атака</p>
+</div>
+</div>
+</div>
+<aside>Як ProVerif працює всередині. Спершу він перекладає модель у Горн-клаузи, тобто правила вигляду «якщо зловмисник знає A, то він знає B». Ліворуч унизу два приклади. Перша клауза описує зловмисника: якщо він знає шифротекст і закритий ключ, то знає відкритий текст. Друга описує Боба: якщо зловмисник може надіслати Бобові будь-яке перше повідомлення з іменем Аліси, то отримає відповідь Боба. Нонс Боба записано як nb від x, тобто як функцію від того, що Боб отримав. Це ключовий трюк: у клаузах немає ні порядку подій, ні кількості сесій, кожну клаузу можна застосувати скільки завгодно разів. Тому перевірка охоплює необмежену кількість сесій. Далі ProVerif насичує множину клауз резолюцією і перевіряє, чи виводиться ціль, наприклад attacker від секрету. Якщо не виводиться, властивість доведено. Якщо виводиться, він намагається відновити справжню трасу атаки. Вдалося — відповідь false з трасою. Не вдалося, бо абстракція клауз загубила, наприклад, те, що нонс створюється один раз, — відповідь cannot be proved.</aside>
+</section>

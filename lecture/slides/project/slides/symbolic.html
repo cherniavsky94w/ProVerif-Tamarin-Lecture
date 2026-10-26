@@ -1,0 +1,16 @@
+<section id="symbolic" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Символьна модель: повідомлення як терми</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;line-height:1.4"><b>Терми.</b> Повідомлення будують функціями: <span style="color:#1F5F99">aenc((na, A), pkB)</span>, а не бітами.</p>
+<p style="font-size:32px;line-height:1.4"><b>Конструктори й деструктори.</b> Розібрати терм можна лише за правилом: розшифрувати без закритого ключа неможливо.</p>
+<p style="font-size:32px;line-height:1.4"><b>Рівняння.</b> Алгебра примітиву, наприклад комутативність Діффі–Геллмана.</p>
+<p style="font-size:32px;line-height:1.4"><b>Ідеальна криптографія.</b> Без ключа зловмисник не дізнається нічого: ні частини, ні «майже».</p>
+</div>
+<div style="width:760px;display:flex;flex-direction:column;gap:12px;background:#15202B;padding:40px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#8EC1EE">(* ProVerif *)</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">fun aenc(bitstring, pkey): bitstring.<br>reduc forall m: bitstring, k: skey;<br>&#160;&#160;adec(aenc(m, pk(k)), k) = m.<br><br>equation forall x: exponent,<br>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;y: exponent;<br>&#160;&#160;exp(exp(g, x), y) = exp(exp(g, y), x).</p>
+</div>
+</div>
+<aside>Основа обох інструментів — символьна модель криптографії, її ще називають моделлю Долєва–Яо. Повідомлення в ній не є рядками бітів, це терми, тобто вирази, побудовані з функцій. Шифротекст — це терм aenc від повідомлення і відкритого ключа. Функції бувають двох видів. Конструктори будують терми: шифрування, підпис, хеш, кортеж. Деструктори розбирають їх, і лише за явно записаним правилом. Праворуч бачите правило ProVerif: adec від aenc(m, pk(k)) з ключем k дає m. Жодного іншого способу дістати m з шифротексту модель не має, отже, без закритого ключа розшифрувати неможливо. Для примітивів зі складнішою алгеброю записують рівняння, наприклад для Діффі–Геллмана: g у степені x, потім у степені y дорівнює g у степені y, потім x. Важливо розуміти, що це модель ідеальної криптографії. Зловмисник або має ключ і знає все, або не має ключа й не знає нічого. Атак на сам шифр, часткових витоків, перебору тут немає. Тому ці інструменти шукають логічні помилки протоколу, а стійкість примітивів доводять іншими методами.</aside>
+</section>

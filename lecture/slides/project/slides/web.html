@@ -1,0 +1,22 @@
+<section id="web" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Як моделювати вебпротокол</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:40px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600">Браузер як учасник</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">У нього пароль користувача; він виконує перенаправлення й переходить за посиланнями, які надіслав зловмисник.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:40px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600">TLS як захищений канал</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">ProVerif: шифрування на ключ сервера. Tamarin: лінійні факти ToServer(…), які зловмисник не читає.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:40px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600">Зловмисник як учасник</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Власний браузер, власні акаунти, клієнти й сервери, зареєстровані за всіма правилами.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:40px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600">Свідомо поза моделлю</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">DOM, JavaScript, атрибути cookie, час. Кожне спрощення записуємо й обґрунтовуємо.</p>
+</div>
+</div>
+<aside>Переходимо до вебпротоколів, бо з ними ви працюватимете на практичних. Тут кілька прийомів моделювання. Перший: браузер — повноцінний учасник протоколу. У нього пароль користувача, він виконує перенаправлення, які йому повертають сервери, і він переходить за посиланнями, які може надіслати зловмисник, наприклад у листі. Другий: TLS ми не моделюємо побайтово, а беремо абстракцію захищеного каналу. У ProVerif найпростіше зашифрувати повідомлення відкритим ключем сервера. У Tamarin зручніше лінійні факти: факт ToServer зловмисник не бачить і не може створити. Третій, найважливіший: зловмисник — теж учасник. У нього свій браузер, свої акаунти на чесних серверах, свої зареєстровані клієнти й навіть свій сервер авторизації. Більшість атак на OAuth вимагають саме цього, і модель, яка забула про це, нічого не знайде. І четвертий: що лишаємо поза моделлю. DOM, JavaScript, атрибути cookie, час життя токенів. Це нормально, але кожне спрощення треба записати й пояснити, чому воно не ховає атаку, яку ми шукаємо. У звіті це окремий розділ.</aside>
+</section>

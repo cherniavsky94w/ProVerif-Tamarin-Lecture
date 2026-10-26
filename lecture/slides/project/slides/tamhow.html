@@ -1,0 +1,40 @@
+<section id="tamhow" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Як Tamarin шукає атаку</h2>
+<div style="display:flex;gap:56px;align-items:start">
+<div style="width:520px;display:flex;flex-direction:column;align-items:center;gap:10px">
+<p style="align-self:start;font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F5F99">Траса: ланцюжок правил</p>
+<div style="width:520px;background:#ECE8DF;padding:14px 24px;border-radius:12px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.4">Register_pk</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="width:520px;background:#ECE8DF;padding:14px 24px;border-radius:12px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.4">I_1 · Out(m1)</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="width:520px;background:#ECE8DF;padding:14px 24px;border-radius:12px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.4">R_1 · In(m1), Out(m2)</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="width:520px;background:#ECE8DF;padding:14px 24px;border-radius:12px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.4">I_2 · In(m2), Out(m3)</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="width:520px;background:#15202B;padding:14px 24px;border-radius:12px"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.4;color:#F5F3EE">R_2 · <span style="color:#F0995E">Secret_R(I, R, nr)</span></p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="align-self:start;font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F5F99">Пошук доказу назад від цілі (схема)</p>
+<div style="align-self:stretch;background:#15202B;padding:20px 28px;border-radius:12px"><p style="font-size:26px;line-height:1.35;color:#F5F3EE">Заперечення леми: Secret_R(I, R, nr) і зловмисник знає nr</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="align-self:stretch;background:#FFFDF8;border:2px solid #15202B;padding:20px 28px;border-radius:12px"><p style="font-size:26px;line-height:1.35">Ціль: звідки зловмисник дізнався nr? Розбір за правилами, що могли його видати</p></div>
+<x-shape kind="arrow-down" style="background:#5A6470;width:24px;height:30px"></x-shape>
+<div style="align-self:stretch;display:flex;gap:16px">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#E3ECF5;padding:20px 22px;border-radius:12px">
+<h3 style="font-size:26px;font-weight:600;color:#1F5F99">R_1: закрито</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">nr у відповіді для A, а ключ A не розкрито</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#E3ECF5;padding:20px 22px;border-radius:12px">
+<h3 style="font-size:26px;font-weight:600;color:#1F5F99">I_2 до B: закрито</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">nr зашифровано для B, а ключ B не розкрито</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#F6E3D6;padding:20px 22px;border-radius:12px">
+<h3 style="font-size:26px;font-weight:600;color:#B4501A">I_2 до I: атака</h3>
+<p style="font-size:24px;line-height:1.35;color:#3D4752">Аліса говорить зі зловмисником і шифрує nr для нього</p>
+</div>
+</div>
+</div>
+</div>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">Усі гілки закрито: verified · є несуперечлива гілка: falsified і граф атаки · гілки множаться без кінця: пошук не завершується</p>
+<aside>Тепер те саме для Tamarin. Ліворуч — що таке траса: послідовність застосувань правил. Реєстрація ключів, Аліса надсилає перше повідомлення, Боб відповідає, Аліса надсилає третє, Боб завершує й позначає nr як секрет. Між правилами повідомлення переходять через мережу, тобто через зловмисника. Праворуч — як Tamarin доводить лему. Він бере заперечення: «існує траса, у якій Боб вважає nr секретом, а зловмисник його знає», і шукає таку трасу назад від цілі. Ставить питання: звідки зловмисник міг дізнатися nr? Відповідь — розбір випадків за всіма правилами, які могли видати nr. Кожна гілка розвивається далі, поки не виникне суперечність, тоді гілку закрито. Наприклад, nr є у відповіді Боба, але вона зашифрована для Аліси, а ключ Аліси за умовою леми не розкрито: суперечність. Або Аліса пересилає nr Бобові, зашифрованим його ключем: теж суперечність. Якщо всі гілки закрито, лема доведена. Якщо якась гілка доходить до несуперечливої траси, це атака, і Tamarin малює її граф. У нашому прикладі така гілка — правило I_2 в сесії, яку Аліса почала зі зловмисником: вона сама шифрує nr для нього. Схема на слайді спрощена. А якщо гілки множаться без кінця, пошук не завершується, і тоді потрібні допоміжні леми.</aside>
+</section>

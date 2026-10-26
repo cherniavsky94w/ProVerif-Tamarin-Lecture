@@ -1,0 +1,22 @@
+<section id="proverif" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">ProVerif: протокол як набір процесів</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<table style="flex:1;font-size:28px;color:#15202B">
+<tr><th style="width:40%">Конструкція</th><th style="width:60%">Значення</th></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">new n</td><td>свіже випадкове значення</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">in(c, x) / out(c, m)</td><td>прийом і надсилання; канал c бачить зловмисник</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">let p = adec(…) in</td><td>розбір; не вдалося, процес зупиняється</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">event E(…)</td><td>позначка для властивостей</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">!P</td><td>необмежена кількість копій P</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">insert / get</td><td>спільна таблиця (база користувачів)</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">phase 1</td><td>пізніший етап, напр. витік ключа</td></tr>
+</table>
+<div style="width:520px;display:flex;flex-direction:column;gap:16px;background:#ECE8DF;padding:40px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Як працює</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Процеси перекладаються в Горн-клаузи, далі резолюція.</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Необмежена кількість сесій, зазвичай секунди.</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Відповіді: <b>true</b>, <b>false</b> з трасою або <b>cannot be proved</b>.</p>
+</div>
+</div>
+<aside>Перший інструмент — ProVerif, його розробляє Бруно Бланше в INRIA. Протокол у ньому описують мовою прикладного пі-числення: кожен учасник — це процес. Конструкцій небагато, і ви їх усі бачите в таблиці. new створює свіже випадкове значення, нонс чи ключ. in і out приймають і надсилають повідомлення по каналу; відкритий канал c бачить і контролює зловмисник. let з деструктором розбирає повідомлення, і якщо розбір не вдався, наприклад ключ не той, процес просто зупиняється, це і є «перевірка». event ставить позначку для властивостей. Знак оклику означає необмежену кількість копій процесу, тобто необмежену кількість сесій. Таблиці потрібні для спільних даних, наприклад бази користувачів. Фази дають змогу сказати «потім сталося ось це», наприклад витік ключа. Під капотом ProVerif перекладає все в Горн-клаузи й шукає виведення методом резолюції. Завдяки цьому він дуже швидкий і перевіряє необмежену кількість сесій. Ціна — надмірна апроксимація: інколи він не може відрізнити справжню атаку від хибної й відповідає «cannot be proved». Але якщо він каже «false» і показує трасу, траса справжня. Сучасні версії ProVerif мають леми, аксіоми, доведення індукцією й натуральні числа; автори описали це 2022 року, і це помітно зменшує кількість хибних атак і випадків незавершення.</aside>
+</section>

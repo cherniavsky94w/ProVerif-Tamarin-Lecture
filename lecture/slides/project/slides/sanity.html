@@ -1,0 +1,16 @@
+<section id="sanity" data-transition="fade" style="background:#15202B;color:#F5F3EE;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:48px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#F0995E">Пастка №1</p>
+<h2 style="font-size:84px;font-weight:600;line-height:1.1;color:#F5F3EE">«Доведено» може означати «нічого не сталося»</h2>
+<p style="font-size:36px;line-height:1.4;color:#B8C2CC">Якщо сервер у моделі через помилку нічого не приймає, будь-яка властивість автентифікації виконується. Тому в кожній моделі є перевірка досяжності.</p>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#22303E;padding:32px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">query q: bitstring;<br>&#160;&#160;event(RSAccept(alice, admin, q)).</p>
+<p style="font-size:26px;line-height:1.4;color:#8EC1EE">ProVerif: «not event(...) is false» означає «досяжно»</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#22303E;padding:32px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">lemma executable:<br>&#160;&#160;exists-trace "Ex ... LoggedIn(...)@i"</p>
+<p style="font-size:26px;line-height:1.4;color:#8EC1EE">Tamarin: «verified» означає «трасу знайдено»</p>
+</div>
+</div>
+<aside>Перш ніж іти до інструментів, одна пастка, на якій помиляються всі початківці. Властивість автентифікації має вигляд «якщо сервер прийняв, то клієнт надіслав». Якщо через помилку в моделі сервер ніколи нічого не приймає, наприклад ви неправильно записали шаблон повідомлення, ця імплікація тривіально істинна. Інструмент радісно скаже «доведено», хоча модель нічого не перевіряє. Тому правило: у кожній моделі має бути перевірка досяжності, тобто запит, який показує, що чесне виконання протоколу до кінця можливе. У ProVerif пишуть query event від події, і бажана відповідь тут, як не дивно, «false»: ProVerif намагається довести, що подія ніколи не стається, і спростовує це, показуючи трасу. У Tamarin пишуть лему exists-trace, і там бажана відповідь «verified», тобто трасу знайдено. На практичних роботах це обов’язковий розділ звіту. І ще одне: якщо ви «виправили» модель і всі властивості стали істинними, перевірте досяжність ще раз. Найпростіший спосіб «виправити» протокол — зробити так, щоб він не працював.</aside>
+</section>

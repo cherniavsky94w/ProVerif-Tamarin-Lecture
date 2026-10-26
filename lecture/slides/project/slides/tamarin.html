@@ -1,0 +1,21 @@
+<section id="tamarin" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:44px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Tamarin: протокол як правила переписування</h2>
+<div style="display:flex;gap:40px;align-items:start">
+<div style="width:880px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#15202B;padding:36px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">rule R_2:<br>&#160;&#160;[ St_R_1(R, I, ni, nr),<br>&#160;&#160;&#160;&#160;!Ltk(R, ltkR),<br>&#160;&#160;&#160;&#160;In(aenc(&lt;'3', nr&gt;, pk(ltkR))) ]<br><span style="color:#F0995E">&#160;&#160;--[ Commit_R(I, R, &lt;ni, nr&gt;) ]-&gt;</span><br><span style="color:#8EC1EE">&#160;&#160;[ ]</span></p>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Білим: <b style="color:#15202B">премісії</b>, які правило споживає. <span style="color:#B4501A">Помаранчевим:</span> <b style="color:#15202B">дії</b>, з них будують леми. <span style="color:#1F5F99">Блакитним:</span> <b style="color:#15202B">висновки</b>, нові факти.</p>
+</div>
+<table style="flex:1;font-size:26px;color:#15202B">
+<tr><th style="width:38%">Факт</th><th style="width:62%">Значення</th></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">Fr(~n)</td><td>свіже значення</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">In(m), Out(m)</td><td>мережа, тобто зловмисник</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">F(…)</td><td>лінійний: стан, споживається один раз</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">!F(…)</td><td>персистентний: ключі, реєстрація</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">K(m)</td><td>знання зловмисника (у лемах)</td></tr>
+<tr><td style="font-family:'JetBrains Mono', 'Courier New', monospace">E(…)@#i</td><td>дія E у момент i</td></tr>
+</table>
+</div>
+<aside>Другий інструмент — Tamarin, його розробляють у ETH Zürich, CISPA та інших групах. Тут протокол описують не процесами, а правилами переписування мультимножин. Стан системи — це мішок фактів. Правило має три частини. Ліворуч, у квадратних дужках, премісії: факти, які мають бути в стані, щоб правило спрацювало; лінійні факти правило при цьому споживає. Посередині, між рисками, дії: це позначки в трасі, з яких потім будують леми, аналог подій у ProVerif. Праворуч висновки: нові факти, які правило додає. На прикладі: Боб, у якого є стан після першого кроку, St_R_1, і його довгостроковий ключ, отримує з мережі третє повідомлення; правило споживає стан і фіксує дію Commit_R. Кілька спеціальних фактів: Fr для свіжих значень, In та Out для мережі, тобто для зловмисника. Знак оклику робить факт персистентним: його можна використовувати скільки завгодно разів, так моделюють ключі й реєстрацію. Лінійні факти споживаються один раз, тому стан, лічильники, одноразові коди моделюються природно. Саме в цьому сильна сторона Tamarin порівняно з ProVerif. Леми пишуть у логіці першого порядку з часовими точками: дія E сталася в момент i, і i раніше за j.</aside>
+</section>

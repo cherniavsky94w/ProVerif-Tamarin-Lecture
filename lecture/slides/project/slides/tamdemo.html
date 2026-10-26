@@ -1,0 +1,20 @@
+<section id="tamdemo" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Демо: той самий протокол у Tamarin</h2>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0E1620;padding:36px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">$ tamarin-prover --prove nspk.spthy<br>&#160;&#160;types (all-traces): <span style="color:#8EC1EE">verified</span> (32 steps)<br>&#160;&#160;executable (exists-trace): <span style="color:#8EC1EE">verified</span> (11 steps)<br>&#160;&#160;nr_secrecy (all-traces): <span style="color:#F0995E">falsified - found trace</span> (13 steps)<br>&#160;&#160;responder_injective_agreement (all-traces): <span style="color:#F0995E">falsified - found trace</span> (13 steps)</p>
+<p style="font-size:26px;line-height:1.4;color:#B8C2CC">processing time ≈ 1 с</p>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:36px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Інтерактивний режим</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#15202B">tamarin-prover interactive .</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Браузер: 127.0.0.1:3001 → лема → autoprove → граф атаки</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:36px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Як читати доказ</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#15202B">solve( !KU( ~nr ) @ #vk.1 )<br>&#160;&#160;case I_2</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">«зловмисник дізнався nr через правило I_2»; ці рядки є в тексті доказу леми nr_secrecy, над підсумком</p>
+</div>
+</div>
+<aside>Той самий протокол у Tamarin. Модель довша, бо кожен крок — окреме правило, але результат той самий. Запускаємо з ключем --prove, і наприкінці виводу є підсумок. Перша лема, types, допоміжна, про неї на наступному слайді. executable — це наша перевірка досяжності, вона verified, тобто чесне виконання можливе. А секретність nb і ін’єктивна узгодженість для Боба спростовані, знайдено трасу на 13 кроків. Уся перевірка триває близько секунди. Головна перевага Tamarin для навчання — інтерактивний режим. Запускаєте tamarin-prover interactive у теці з моделями, відкриваєте в браузері локальну адресу, обираєте лему й натискаєте autoprove. Tamarin показує граф атаки: прямокутники — це кроки учасників, решта — кроки, якими зловмисник виводить знання, стрілки — як повідомлення переходять між ними. Текстовий доказ теж читається: рядок solve з фактом KU означає «звідки зловмисник це знає», а наступний рядок case називає правило, через яке він це дізнався. На практичній роботі з OAuth ви будете саме так шукати, звідки зловмисник узяв код авторизації.</aside>
+</section>

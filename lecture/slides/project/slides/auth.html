@@ -1,0 +1,31 @@
+<section id="auth" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Автентифікація: кореспонденція подій</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:26px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#1F5F99">Ієрархія Лоу, від слабшої до сильнішої</p>
+<div style="display:flex;flex-direction:column;gap:6px;background:#ECE8DF;padding:24px 28px;border-radius:12px;width:640px">
+<h3 style="font-size:30px;font-weight:600">Aliveness</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">партнер колись щось виконував</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#DCE5EE;padding:24px 28px;border-radius:12px;width:700px">
+<h3 style="font-size:30px;font-weight:600">Weak agreement</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">партнер виконував протокол саме зі мною</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#C9D9E9;padding:24px 28px;border-radius:12px;width:760px">
+<h3 style="font-size:30px;font-weight:600">Non-injective agreement</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">…і погоджується з тими самими даними</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;background:#1F5F99;padding:24px 28px;border-radius:12px;width:820px">
+<h3 style="font-size:30px;font-weight:600;color:#F5F3EE">Injective agreement</h3>
+<p style="font-size:26px;line-height:1.35;color:#E3ECF5">…і кожному прийняттю відповідає окремий запуск: повтор не пройде</p>
+</div>
+</div>
+<div style="width:780px;display:flex;flex-direction:column;gap:12px;background:#15202B;padding:40px;border-radius:16px">
+<p style="font-size:26px;font-weight:600;color:#8EC1EE">ProVerif</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">event(RSAccept(s, r, q))<br>&#160;&#160;==&gt; event(Issued(s, r, rs)).<br><br>inj-event(BobCommit(A, B, na, nb))<br>&#160;&#160;==&gt; inj-event(<br>&#160;&#160;&#160;&#160;&#160;&#160;AliceRunning(A, B, na, nb)).</p>
+<p style="font-size:26px;line-height:1.4;color:#B8C2CC">«Якщо сервер прийняв токен, то IdP видав саме його і саме для цього сервера»</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#5A6470">Lowe G. A hierarchy of authentication specifications. CSFW, 1997</p>
+<aside>Друга група — автентифікація. Тут питання не «чи знає зловмисник», а «чи могло статися так, що одна сторона повірила в щось, чого не було». Формулюють це через події. У коді моделі ставимо позначки: сервер ідентичності, коли видає токен, виконує подію Issued; ресурсний сервер, коли приймає токен, виконує подію RSAccept. Властивість каже: щоразу, коли сталася RSAccept з певними параметрами, раніше сталася Issued з тими самими параметрами. Це кореспонденція подій. Гевін Лоу 1997 року запропонував ієрархію таких властивостей. Найслабша — aliveness: партнер хоч колись щось виконував. Далі weak agreement: партнер виконував протокол саме зі мною. Далі non-injective agreement: ми погодилися щодо тих самих даних, наприклад тих самих нонсів чи ключа. І найсильніша, injective agreement: кожному моєму прийняттю відповідає окремий запуск партнера, тобто одне повідомлення не можна прийняти двічі. У ProVerif ін’єктивна версія пишеться через inj-event. Різниця між двома останніми — це саме атака повторенням, replay. На практичній ви побачите модель, де неін’єктивна властивість доводиться, а ін’єктивна ні, і треба буде розібратися чому.</aside>
+</section>

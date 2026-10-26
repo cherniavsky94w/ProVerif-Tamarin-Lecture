@@ -1,0 +1,39 @@
+<section id="pipeline" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Що таке формальна верифікація протоколу</h2>
+<div style="display:flex;align-items:center;gap:20px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:32px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600">Протокол</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">RFC, специфікація, код</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:32px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600">Модель</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">процеси або правила, зловмисник</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFDF8;padding:32px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600">Властивість</h3>
+<p style="font-size:26px;line-height:1.35;color:#3D4752">секретність, автентифікація</p>
+</div>
+<x-shape kind="arrow-right" style="background:#15202B;width:56px;height:28px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#15202B;padding:32px;border:2px solid #15202B;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#F5F3EE">Інструмент</h3>
+<p style="font-size:26px;line-height:1.35;color:#B8C2CC">ProVerif, Tamarin</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#E3ECF5;padding:36px;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1F5F99">Доведено</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">для будь-якої кількості сесій і будь-якої поведінки зловмисника в межах моделі</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#F6E3D6;padding:36px;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#B4501A">Атака</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">конкретна траса: хто, кому, що надіслав і як зловмисник досяг мети</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#ECE8DF;padding:36px;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#3D4752">Невідомо</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">пошук не завершився або «cannot be proved»: модель треба спрощувати чи допомагати інструменту</p>
+</div>
+</div>
+<aside>Що ж таке формальна верифікація протоколу. Ми беремо протокол у тому вигляді, в якому він описаний у стандарті чи реалізований у коді, і будуємо модель: які учасники, які повідомлення, які перевірки робить кожен учасник і що вміє зловмисник. Потім формулюємо властивість, наприклад «пароль ніколи не стає відомим зловмиснику» або «сервер приймає токен, лише якщо його видав сервер ідентичності». Модель і властивість подаємо інструменту. Відповідей буває три. Перша: доведено, причому для необмеженої кількості паралельних сесій і для будь-якої поведінки зловмисника, яку дозволяє модель. Тестами такого не отримати в принципі. Друга: атака, і тоді інструмент дає трасу, тобто покроковий сценарій. Третя, про яку чесно треба сказати: інструмент може не завершитися або відповісти, що не може ні довести, ні спростувати. Тоді модель спрощують або дають інструменту підказки, про це поговоримо окремо. Зверніть увагу на слова «в межах моделі»: доведення стосується моделі, а не коду. Якщо модель неточна, доведення нічого не гарантує про реальну систему.</aside>
+</section>

@@ -1,0 +1,18 @@
+<section id="tamsources" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Пастка №2: Tamarin не зупиняється</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#F6E3D6;padding:40px;border-radius:16px">
+<p style="font-size:96px;font-weight:700;line-height:1.05;color:#B4501A">&gt; 60 с</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">NSPK без допоміжної леми: пошук доказу навіть для executable не завершився</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#E3ECF5;padding:40px;border-radius:16px">
+<p style="font-size:96px;font-weight:700;line-height:1.05;color:#1F5F99">≈ 1 с</p>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">та сама модель з лемою [sources]: усі чотири леми</p>
+</div>
+</div>
+<div style="display:flex;gap:48px;align-items:start">
+<p style="flex:1;font-size:30px;line-height:1.45"><b>Причина:</b> часткові деконструкції. Отримавши aenc(&lt;'1', ni, I&gt;, pk(ltkR)), Tamarin не знає, звідки взялося ni. Лема [sources] каже: або зловмисник знав ni раніше, або весь шифротекст створила чесна сторона.</p>
+<p style="flex:1;font-size:30px;line-height:1.45"><b>Що робити:</b> перевіряти леми по одній (--prove=лема), дивитися в інтерактивному режимі, на якій цілі зациклився пошук, додавати допоміжні леми [sources] і [reuse], обмеження.</p>
+</div>
+<aside>Друга пастка, вже специфічна для Tamarin. Tamarin шукає доказ, рухаючись від цілі назад, і може не зупинитися. Це добре видно на нашій розминковій моделі. Без допоміжної леми Tamarin за хвилину не довів навіть просту лему досяжності. З однією допоміжною лемою вся теорія, чотири леми, доводиться приблизно за секунду. Причина має назву часткові деконструкції. Коли Боб отримує шифротекст і бере з нього змінну ni, Tamarin не знає, звідки ця змінна могла взятися: це може бути будь-що, і пошук розгалужується безкінечно. Допоміжна лема з позначкою sources каже: значення ni, яке отримав Боб, або було відоме зловмиснику раніше, або весь шифротекст створила Аліса правилом I_1. Tamarin спершу доводить саму лему, а потім використовує її як готовий факт. Практичні поради: перевіряйте леми по одній; у графічному режимі дивіться, на якій цілі пошук ходить по колу; додавайте допоміжні леми. Інколи допомагає переписати модель, наприклад зробити ідентичності свіжими значеннями. На практичній з OAuth моделі вже налаштовані так, що завершуються за секунди, але в розминці ви відтворите цей експеримент.</aside>
+</section>

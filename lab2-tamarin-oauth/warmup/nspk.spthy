@@ -1,0 +1,87 @@
+theory NSPK
+begin
+
+/*
+ * Needham-Schroeder public-key protocol (1978), the Tamarin warm-up.
+ *
+ *   1. I -> R : aenc(<'1', ni, I>, pkR)
+ *   2. R -> I : aenc(<'2', ni, nr>, pkI)
+ *   3. I -> R : aenc(<'3', nr>, pkR)
+ *
+ * Any agent may be compromised (Reveal_ltk). The lemmas only speak about
+ * sessions between agents whose keys were never revealed.
+ *
+ * Run:  tamarin-prover --prove nspk.spthy
+ *       tamarin-prover interactive .      (then open http://127.0.0.1:3001)
+ * Expected: types and executable verified; nr_secrecy and
+ * responder_injective_agreement falsified (Lowe's attack, 1995).
+ */
+
+builtins: asymmetric-encryption
+
+/* Public-key infrastructure: agents register key pairs. */
+rule Register_pk:
+  [ Fr(~ltk) ]
+  -->
+  [ !Ltk($A, ~ltk), !Pk($A, pk(~ltk)), Out(pk(~ltk)) ]
+
+rule Reveal_ltk:
+  [ !Ltk(A, ltk) ] --[ Reveal(A) ]-> [ Out(ltk) ]
+
+/* Initiator */
+rule I_1:
+  let m1 = aenc(<'1', ~ni, $I>, pkR) in
+  [ Fr(~ni), !Pk($R, pkR) ]
+  --[ OUT_I_1(m1) ]->
+  [ St_I_1($I, $R, ~ni), Out(m1) ]
+
+rule I_2:
+  let m2 = aenc(<'2', ni, nr>, pk(ltkI)) in
+  [ St_I_1(I, R, ni), !Ltk(I, ltkI), !Pk(R, pkR), In(m2) ]
+  --[ IN_I_2_nr(nr, m2), Running_I(I, R, <ni, nr>), Commit_I(I, R, <ni, nr>) ]->
+  [ Out(aenc(<'3', nr>, pkR)) ]
+
+/* Responder */
+rule R_1:
+  let m1 = aenc(<'1', ni, I>, pk(ltkR))
+      m2 = aenc(<'2', ni, ~nr>, pkI) in
+  [ !Ltk($R, ltkR), !Pk(I, pkI), Fr(~nr), In(m1) ]
+  --[ IN_R_1_ni(ni, m1), OUT_R_1(m2), Running_R(I, $R, <ni, ~nr>) ]->
+  [ St_R_1($R, I, ni, ~nr), Out(m2) ]
+
+rule R_2:
+  [ St_R_1(R, I, ni, nr), !Ltk(R, ltkR), In(aenc(<'3', nr>, pk(ltkR))) ]
+  --[ Commit_R(I, R, <ni, nr>), Secret_R(I, R, nr) ]->
+  [ ]
+
+/* Helper lemma: where can the nonce variables ni and nr come from?
+   Without it Tamarin cannot resolve the "partial deconstructions" of the
+   received ciphertexts and the proof search does not terminate. A nonce a
+   role receives was either known to the attacker earlier, or the whole
+   ciphertext was produced by the matching honest rule. */
+lemma types [sources]:
+  "(All ni m1 #i. IN_R_1_ni(ni, m1)@i
+      ==> (Ex #j. KU(ni)@j & #j < #i) | (Ex #j. OUT_I_1(m1)@j))
+   & (All nr m2 #i. IN_I_2_nr(nr, m2)@i
+      ==> (Ex #j. KU(nr)@j & #j < #i) | (Ex #j. OUT_R_1(m2)@j))"
+
+/* Sanity: the protocol can run to the end between honest agents. */
+lemma executable:
+  exists-trace
+  "Ex I R t #i #j. Commit_R(I, R, t)@i & Running_I(I, R, t)@j
+     & not (Ex #r. Reveal(I)@r) & not (Ex #r. Reveal(R)@r)"
+
+/* nr stays secret when the responder believes it talks to an honest I. */
+lemma nr_secrecy:
+  "All I R nr #i. Secret_R(I, R, nr)@i
+     & not (Ex #r. Reveal(I)@r) & not (Ex #r. Reveal(R)@r)
+     ==> not (Ex #j. K(nr)@j)"
+
+/* Injective agreement for the responder (Lowe's hierarchy). */
+lemma responder_injective_agreement:
+  "All I R t #i. Commit_R(I, R, t)@i
+     ==> (Ex #j. Running_I(I, R, t)@j & #j < #i
+           & not (Ex I2 R2 #i2. Commit_R(I2, R2, t)@i2 & not (#i2 = #i)))
+       | (Ex #r. Reveal(I)@r) | (Ex #r. Reveal(R)@r)"
+
+end

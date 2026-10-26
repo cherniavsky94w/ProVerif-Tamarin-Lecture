@@ -1,0 +1,210 @@
+theory OAuthCodeFlow_v1
+begin
+
+/*
+ * Lab 2, variant 1: OAuth 2.0 authorization code flow
+ * used for "Log in with <AS>".
+ *
+ * Participants
+ *   browser  of an honest user u who has an account (u, pw) at one honest AS
+ *   client   (relying party) c, a confidential web client with a client
+ *            secret per AS; client_id = c, redirect_uri = c (its callback)
+ *   AS       honest authorization servers
+ *   attacker controls the network, has its own browser ('adv'), its own
+ *            accounts at honest ASs, its own clients registered at honest
+ *            ASs, and its own authorization servers (DAS)
+ *
+ * Flow
+ *   1. browser -> client : start(as)                    user picks an AS
+ *   2. client  -> browser: 302 to as/authorize?client_id=c&redirect_uri=c&state=st
+ *   3. browser -> AS     : authorize(client_id, redirect_uri, state) + login(u, pw)
+ *   4. AS      -> browser: 303 to redirect_uri?code=code&state=st&iss=as
+ *   5. browser -> client : callback(code, state, iss)
+ *   6. client  -> AS     : token(client_id, client_secret, code)
+ *   7. AS      -> client : the user id u (stands for access token + userinfo)
+ *      client logs the browser session in as u at as
+ *
+ * TLS is modelled with linear facts (ToClient, ToAS, ToBrowser, ToTokenEP):
+ * the attacker cannot read or change honest TLS traffic, but can send its
+ * own requests from its own browser 'adv'. A user may follow links that
+ * the attacker sends (rules B_FollowAuthzLink, B_FollowCbLink).
+ *
+ * Run: tamarin-prover --prove <file>.spthy
+ */
+
+builtins: hashing
+
+restriction Equality:
+  "All x y #i. Eq(x, y)@i ==> x = y"
+
+/* ---------------- Setup ---------------- */
+
+rule Honest_AS:
+  [ Fr(~as) ] --[ HonestAS(~as) ]-> [ !AS(~as), Out(~as) ]
+
+rule Dishonest_AS:
+  [ Fr(~as) ] --[ DishonestAS(~as) ]-> [ !DAS(~as), Out(~as) ]
+
+rule Honest_Client:
+  [ Fr(~c) ] --[ HonestClient(~c) ]-> [ !Client(~c), Out(~c) ]
+
+/* An honest client registers at an honest AS. */
+rule Register_Client_HonestAS:
+  [ !Client(c), !AS(as), Fr(~sec) ]
+  -->
+  [ !ClientReg(as, c, c, ~sec), !ClientCfg(c, as, ~sec) ]
+
+/* An honest client is also registered at attacker-run ASs, which know its
+   secret there. */
+rule Register_Client_DishonestAS:
+  [ !Client(c), !DAS(as), Fr(~sec) ]
+  -->
+  [ !ClientCfg(c, as, ~sec), Out(~sec) ]
+
+/* The attacker registers its own client e (callback on a host it runs). */
+rule Register_Adv_Client:
+  [ !AS(as), Fr(~e), Fr(~sec) ]
+  --[ AdvClient(~e) ]->
+  [ !ClientReg(as, ~e, ~e, ~sec), !AdvHost(~e), Out(<~e, ~sec>) ]
+
+/* An honest user with an account at one honest AS, and her browser. */
+rule Honest_User:
+  [ !AS(as), Fr(~u), Fr(~pw), Fr(~b) ]
+  --[ HonestUser(as, ~u, ~pw), BrowserOf(~b, ~u) ]->
+  [ !Account(as, ~u, ~pw), !Browser(~b, as, ~u, ~pw), Out(~u) ]
+
+/* The attacker's own accounts, used from its own browser 'adv'. */
+rule Adv_User:
+  [ !AS(as), Fr(~m), Fr(~pw) ]
+  --[ BrowserOf('adv', ~m) ]->
+  [ !Account(as, ~m, ~pw), Out(<~m, ~pw>) ]
+
+/* ---------------- Browser ---------------- */
+
+/* The user clicks "Log in" at client c and picks an AS (the attacker may
+   influence the choice, e.g. through a list of ASs on the page). */
+rule B_Start:
+  [ !Browser(b, uas, u, pw), !Client(c), In(as) ]
+  -->
+  [ ToClient(b, c, <'start', as>) ]
+
+/* Redirect from a client to the user's own AS: she logs in there. */
+rule B_Redirect_To_AS:
+  [ ToBrowser(b, <'goto_authz', as, cid, ruri, st>), !Browser(b, as, u, pw) ]
+  -->
+  [ ToAS(b, as, <'authz', cid, ruri, st, u, pw>) ]
+
+/* Redirect from a client to an attacker-run AS. */
+rule B_Redirect_To_DAS:
+  [ ToBrowser(b, <'goto_authz', as, cid, ruri, st>), !DAS(as) ]
+  -->
+  [ Out(<'authz', as, cid, ruri, st>) ]
+
+/* Redirect from an AS to a callback (303: a plain GET of the callback). */
+rule B_Redirect_To_Client:
+  [ ToBrowser(b, <'goto_cb', ruri, m>), !Client(ruri) ]
+  -->
+  [ ToClient(b, ruri, m) ]
+
+rule B_Redirect_To_AdvHost:
+  [ ToBrowser(b, <'goto_cb', ruri, m>), !AdvHost(ruri) ]
+  -->
+  [ Out(<ruri, m>) ]
+
+/* Redirect with status 307: the browser re-sends the POST body of the
+   previous request (here the login form) to the new location. */
+rule B_Repost_To_Client:
+  [ ToBrowser(b, <'repost', ruri, body>), !Client(ruri) ]
+  -->
+  [ ]
+
+rule B_Repost_To_AdvHost:
+  [ ToBrowser(b, <'repost', ruri, body>), !AdvHost(ruri) ]
+  -->
+  [ Out(<ruri, body>) ]
+
+/* The user follows links the attacker sends (e-mail, web page). */
+rule B_FollowAuthzLink:
+  [ !Browser(b, as, u, pw), In(<'authz', as, cid, ruri, st>) ]
+  -->
+  [ ToAS(b, as, <'authz', cid, ruri, st, u, pw>) ]
+
+rule B_FollowCbLink:
+  [ !Browser(b, as, u, pw), !Client(c), In(<c, <'cb', code, st, iss>>) ]
+  -->
+  [ ToClient(b, c, <'cb', code, st, iss>) ]
+
+/* The attacker's own browser talks to any server directly. */
+rule Adv_ToClient:
+  [ In(<c, m>) ] --> [ ToClient('adv', c, m) ]
+
+rule Adv_ToAS:
+  [ In(<as, m>) ] --> [ ToAS('adv', as, m) ]
+
+rule Adv_FromServer:
+  [ ToBrowser('adv', m) ] --> [ Out(m) ]
+
+/* ---------------- Client ---------------- */
+
+rule C_Start:
+  [ ToClient(b, c, <'start', as>), !ClientCfg(c, as, sec), Fr(~st) ]
+  --[ ClientStart(c, b, ~st, as) ]->
+  [ Session(c, b, ~st, as), ToBrowser(b, <'goto_authz', as, c, c, ~st>) ]
+
+rule C_Callback:
+  [ ToClient(b, c, <'cb', code, st, iss>), Session(c, b, st, as) ]
+  --[ Eq(iss, as) ]->
+  [ TokenReq(c, b, as, code) ]
+
+rule C_TokenReq_HonestAS:
+  [ TokenReq(c, b, as, code), !ClientCfg(c, as, sec), !AS(as) ]
+  -->
+  [ ToTokenEP(as, c, sec, code, <c, b, code>) ]
+
+rule C_TokenReq_DishonestAS:
+  [ TokenReq(c, b, as, code), !ClientCfg(c, as, sec), !DAS(as) ]
+  -->
+  [ Out(<as, c, sec, code>) ]
+
+/* The callback page has loaded: its URL (with the code) can now leak, e.g.
+   through the Referer header or the browser history. */
+rule C_Login:
+  [ TokenResp(<c, b, code>, as, u) ]
+  --[ LoggedIn(c, b, as, u) ]->
+  [ Out(code) ]
+
+/* ---------------- Authorization server ---------------- */
+
+rule AS_Authorize:
+  [ ToAS(b, as, <'authz', cid, ruri, st, u, pw>),
+    !Account(as, u, pw), !ClientReg(as, cid, registeredUri, sec), Fr(~code) ]
+  --[ Authorized(as, u, cid) ]->
+  [ Code(as, ~code, cid, u),
+    ToBrowser(b, <'goto_cb', ruri, <'cb', ~code, st, as>>) ]
+
+rule AS_Token:
+  [ ToTokenEP(as, cid, sec, code, ret),
+    !ClientReg(as, cid, ruri, sec), Code(as, code, cid, u) ]
+  --[ Redeemed(as, code, cid) ]->
+  [ TokenResp(ret, as, u) ]
+
+/* ---------------- Lemmas ---------------- */
+
+/* Sanity: an honest user can log in at an honest client. */
+lemma executable:
+  exists-trace
+  "Ex c b as u pw #i #j. LoggedIn(c, b, as, u)@i & HonestUser(as, u, pw)@j
+     & BrowserOf(b, u)@j"
+
+/* Session integrity: a client logs a browser session in only as the owner
+   of that browser. Violated both when the attacker's browser gets an
+   honest user's session and when an honest browser is logged in to the
+   attacker's account (login CSRF). */
+lemma session_integrity:
+  "All c b as u #i. LoggedIn(c, b, as, u)@i ==> Ex #j. BrowserOf(b, u)@j"
+
+/* The user's password stays secret. */
+lemma password_secrecy:
+  "All as u pw #i. HonestUser(as, u, pw)@i ==> not (Ex #j. K(pw)@j)"
+
+end

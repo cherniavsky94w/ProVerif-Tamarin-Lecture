@@ -1,0 +1,22 @@
+<section id="why" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Протоколи ламаються логікою, а не шифром</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#ECE8DF;padding:40px;border-radius:16px">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#B4501A">1978 → 1995</p>
+<h3 style="font-size:32px;font-weight:600">Нідгем–Шредер</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">17 років протокол вважали надійним. Лоу знайшов атаку посередині, перевіряючи модель автоматично.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#ECE8DF;padding:40px;border-radius:16px">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#B4501A">2016 → 2025</p>
+<h3 style="font-size:32px;font-weight:600">OAuth 2.0</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Формальний аналіз знайшов атаки mix-up і 307 redirect. Захисти від них увійшли в RFC 9700 (2025).</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#ECE8DF;padding:40px;border-radius:16px">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#B4501A">2023</p>
+<h3 style="font-size:32px;font-weight:600">EDHOC для IoT</h3>
+<p style="font-size:28px;line-height:1.4;color:#3D4752">Аналіз у ProVerif і Tamarin знайшов слабкості чернетки стандарту IETF; виправлення внесли до затвердження.</p>
+</div>
+</div>
+<p style="font-size:36px;line-height:1.35;color:#15202B">Шифри в усіх трьох випадках не зламано. Тести цих атак не знаходили: їх просто ніхто не уявив.</p>
+<aside>Почнімо з трьох історій. Протокол Нідгема–Шредера з відкритим ключем опубліковано 1978 року, це був хрестоматійний протокол взаємної автентифікації. 1995 року Гевін Лоу опублікував атаку на нього: зловмисник, з яким Аліса чесно почала сесію, видає себе за Алісу перед Бобом. Наступного року Лоу показав, як цю атаку автоматично знаходить перевірник моделей FDR, і запропонував виправлення. Сімнадцять років атаки ніхто не помічав. Друга історія: 2016 року Фетт, Кюстерс і Шмітц формально проаналізували OAuth 2.0 і знайшли нові атаки, зокрема mix-up і атаку через перенаправлення 307; захисти від них записані в RFC 9700, який вийшов 2025 року. Третя, зовсім свіжа і близька до радіозв’язку: EDHOC, протокол обміну ключами IETF для обмежених IoT пристроїв. 2023 року група з Inria проаналізувала його чернетку в ProVerif і Tamarin і знайшла слабкості за розширених моделей загроз; робоча група прийняла виправлення в наступну версію чернетки, тобто ще до затвердження стандарту. Спільне в усіх трьох: шифр ніхто не ламав. Помилка в логіці обміну повідомленнями, у тому, що саме перевіряє кожна сторона. І тести такі помилки не ловлять, бо тест перевіряє сценарій, який хтось придумав, а атака — це сценарій, якого ніхто не придумав.</aside>
+</section>

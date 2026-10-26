@@ -1,0 +1,22 @@
+<section id="pvtrace" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Траса атаки Лоу: proverif -graph</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<ol style="font-size:30px;line-height:1.45;color:#15202B">
+<li>Зловмисник пропонує Алісі співрозмовника I</li>
+<li>Аліса: aenc((na, A), pkI), I розшифровує na</li>
+<li>I перешифровує для Боба від імені A</li>
+<li>Відповідь Боба aenc((na, nb), pkA) I пересилає Алісі без змін</li>
+<li>Аліса шифрує nb для I, і I дізнається nb</li>
+<li>I завершує сесію з Бобом: BobCommit(A, B, …) без AliceRunning(A, B, …)</li>
+</ol>
+<p style="font-size:28px;line-height:1.4;color:#B4501A">Червона рамка на рисунку: подія, що порушує властивість</p>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">Виправлення Лоу: Боб додає своє ім’я в повідомлення 2, Аліса його перевіряє</p>
+</div>
+<div style="width:640px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;color:#5A6470;text-align:right">Аліса · Боб · зловмисник →</p>
+<img src="/_blob/3123beb8f833dbb24a8d6f0e9300e042" alt="Рисунок траси ProVerif для протоколу Нідгема–Шредера: Аліса починає сесію з I, I перешифровує повідомлення для Боба, Боб завершує сесію подією BobCommit(A, B), позначеною червоною рамкою" style="width:640px;height:660px;object-fit:contain;background:#FFFFFF;border:1px solid #D8D2C4;border-radius:8px">
+</div>
+</div>
+<aside>Тепер найцікавіше: що саме знайшов ProVerif. Якщо запустити його з ключем -graph і вказати теку, він малює трасу у вигляді діаграми обміну повідомленнями; праворуч саме такий рисунок, вертикальні лінії — Аліса, Боб і зловмисник. Читаємо згори. Зловмисник каже Алісі: поговори з I, тобто з ним самим, і Аліса чесно починає сесію: шифрує свій нонс та ім’я ключем I. Зловмисник розшифровує, бере na і перешифровує для Боба, ніби від Аліси. Боб відповідає Алісі нонсами na і nb, зашифрованими ключем Аліси. Зловмисник прочитати це не може, але й не мусить: він просто пересилає Алісі. Аліса бачить свій na, вважає, що nb від I, і на третьому кроці шифрує nb для I. Тепер зловмисник знає nb і завершує сесію з Бобом. Червона рамка: подія BobCommit(A, B), тобто Боб вважає, що говорив з Алісою, хоча Аліса говорила зі зловмисником. Виправлення, яке запропонував Лоу, — одне слово: Боб додає своє ім’я в друге повідомлення, і Аліса перевіряє, що відповідь саме від того, з ким вона почала. На практичній ви зробите це виправлення самі.</aside>
+</section>

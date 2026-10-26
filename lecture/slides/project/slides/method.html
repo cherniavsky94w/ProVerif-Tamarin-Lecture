@@ -1,0 +1,36 @@
+<section id="method" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Методика: як шукати вади</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px">
+<div style="display:flex;flex-direction:column;gap:10px;background:#ECE8DF;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#1F5F99">1</p>
+<h3 style="font-size:32px;font-weight:600">Модель</h3>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">чесний протокол, можливості зловмисника, перевірка досяжності</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#ECE8DF;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#1F5F99">2</p>
+<h3 style="font-size:32px;font-weight:600">Властивості</h3>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">спершу природною мовою, потім формально</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#ECE8DF;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#1F5F99">3</p>
+<h3 style="font-size:32px;font-weight:600">Запуск</h3>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">доведено, атака чи невідомо</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#F6E3D6;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#B4501A">4</p>
+<h3 style="font-size:32px;font-weight:600">Траса → причина</h3>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">діаграма атаки; яку перевірку пропущено; клас вразливості</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#F6E3D6;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#B4501A">5</p>
+<h3 style="font-size:32px;font-weight:600">Виправлення</h3>
+<p style="font-size:26px;line-height:1.4;color:#3D4752">мінімальна зміна, повторна перевірка, знову досяжність</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#15202B;padding:36px;border-radius:16px">
+<p style="font-size:44px;font-weight:700;color:#F0995E">6</p>
+<h3 style="font-size:32px;font-weight:600;color:#F5F3EE">Мутації</h3>
+<p style="font-size:26px;line-height:1.4;color:#B8C2CC">приберіть одну перевірку: чи бачить модель атаку?</p>
+</div>
+</div>
+<aside>Зберімо все в методику, за якою ви працюватимете на практичних. Перше: модель чесного протоколу з явно записаними можливостями зловмисника і обов’язково з перевіркою досяжності. Друге: властивості, і саме в такому порядку: спершу речення українською, «сервер приймає токен лише якщо», потім формальний запит. Якщо не можете сказати властивість словами, формальний запис майже напевно хибний. Третє: запуск, одна з трьох відповідей. Четверте, найважливіше для звіту: траса. Її треба перетворити на діаграму обміну повідомленнями, знайти крок, на якому учасник прийняв те, чого не мав приймати, назвати пропущену перевірку і знайти клас вразливості в RFC чи базі CVE. П’яте: мінімальне виправлення і повторна перевірка, разом з досяжністю. І шосте, про що часто забувають навіть досвідчені люди: мутаційне тестування самої моделі. Візьміть модель, де все доведено, приберіть одну перевірку і подивіться, чи знайде інструмент атаку. Якщо не знайде, то або ця перевірка справді зайва, або, що буває частіше, зловмисник у моделі вміє менше, ніж у реальності, і доведення нічого не варте. Саме так зроблено варіанти ваших практичних: це мутації правильних моделей.</aside>
+</section>

@@ -1,0 +1,15 @@
+<section id="secrecy" data-transition="fade" style="background:#F5F3EE;color:#15202B;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Секретність: чи може зловмисник вивести x?</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#15202B;padding:40px;border-radius:16px">
+<p style="font-size:26px;font-weight:600;color:#8EC1EE">ProVerif</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">query attacker(secretNb).<br><br>(* пряма секретність:<br>&#160;&#160; ключ витікає пізніше *)<br>process<br>&#160;&#160;( !Alice | !Bob<br>&#160;&#160;| (phase 1; out(c, skA)) )</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#15202B;padding:40px;border-radius:16px">
+<p style="font-size:26px;font-weight:600;color:#8EC1EE">Tamarin</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F5F3EE">lemma nr_secrecy:<br>&#160;&#160;"All I R nr #i.<br>&#160;&#160;&#160;&#160;Secret_R(I, R, nr)@i<br>&#160;&#160;&#160;&#160;&amp; not (Ex #r. Reveal(I)@r)<br>&#160;&#160;&#160;&#160;&amp; not (Ex #r. Reveal(R)@r)<br>&#160;&#160;&#160;&#160;==&gt; not (Ex #j. K(nr)@j)"</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#3D4752"><b style="color:#15202B">Пряма секретність:</b> дані сесії лишаються секретними, навіть якщо довгостроковий ключ скомпрометують після завершення сесії.</p>
+<aside>Перша група властивостей — секретність. У символьній моделі вона формулюється дуже просто: чи може зловмисник вивести певний терм з усього, що він бачив. У ProVerif це запит attacker від імені: «чи може атакувальник отримати secretNb». У Tamarin є спеціальний факт K, знання зловмисника, і лема каже: якщо Боб у момент i вважає nr секретом сесії з I, і ключі ні I, ні R не скомпрометовано, то не існує моменту j, коли зловмисник знає nr. Зверніть увагу на умови «not Reveal»: секретність має сенс лише для сесій між чесними учасниками. Якщо Боб говорить зі зловмисником, той, звісно, знає спільний секрет. Окремий важливий вид — пряма секретність, forward secrecy. Дані сесії мають лишатися секретними, навіть якщо довгостроковий ключ витече пізніше. У ProVerif це моделюють фазами: у фазі 1 ключ публікується, і питають, чи дізнається зловмисник секрет зі старих повідомлень. У Tamarin так само додають умову, що компрометація сталася після сесії, через порівняння часових точок.</aside>
+</section>
